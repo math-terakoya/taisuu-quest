@@ -1211,7 +1211,7 @@ function renderProblem() {
   const q = p(), el = $('problemExpr');
   $('problemLabel').textContent = q.label;
   const wrapIt = q.exam || q.long;
-  if (wrapIt) el.innerHTML = (q.exam ? q.display.split('\n').flatMap(examLines) : q.display.split(/(?<=。)|\n/).filter(x => x)).map(x => /^　/.test(x) ? '<span class="mline">' + mathHTML(NBOP(PUNC(x.replace(/^　/, '')))) + '</span>' : mathHTML(NBOP(PUNC(x)))).join('<br>');   // 式だけの 行は 大きく（日本語と 見た目の 大きさを そろえる）
+  if (wrapIt) el.innerHTML = (q.exam ? q.display.split('\n').flatMap(examLines) : q.display.split(/(?<=。)|\n/).filter(x => x)).map(x => /^　/.test(x) ? '<span class="mline nw">' + mathHTML(NBOP(PUNC(x.replace(/^　/, '')))) + '</span>' : mathHTML(NBOP(PUNC(x)))).join('<br>');   // 式だけの 行は 大きく（日本語と 見た目の 大きさを そろえる）。式の 行は 途中で 折らず、入らなければ 小さく（11-16 先生）
   else el.innerHTML = q.display.split(/(?<=。)|\n/).filter(x => x).map(x => '<span class="nw">' + mathHTML(NBOP(PUNC(x))) + '</span>').join('<br>');
   el.classList.toggle('exam', !!wrapIt);
   el.classList.toggle('long', !wrapIt && Math.max(...q.display.split('\n').map(x => x.replace(/log_\{([^{}]*)\}/g, 'l$1').replace(/[_^{}|‹›]|\[\d+\]/g, '').length)) > 18);
