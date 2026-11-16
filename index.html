@@ -1340,7 +1340,7 @@ function submit() {
   const ev = C.record(state.ctx, q, ok, cls, Math.round(performance.now() - state.shownAt), state.hintUsed);
   if (ok) onCorrect(ev); else onWrong(cls);
 }
-// 連れ問：① が せいかいなら そのまま ② へ。① を まちがえたら ライフを 1つ へらし、正しい ぬり方を 見せて ② へ
+// 連れ問：① が せいかいなら そのまま ② へ。① を まちがえたら そこで 止める（ライフ −1、理由、にた 問題へ）
 function goStep2(msg) {
   C.useStep(p(), 1); resetInput(); state.hintLv = 0; renderHint();
   state.phase = 'play'; renderProblem(); renderControls(); draw(); setMessage(msg + '\n' + hint());
@@ -1354,14 +1354,9 @@ function stepOne(ok, cls) {
     setTimeout(() => goStep2('つぎは ②'), 900);
     return;
   }
-  state.stepFail = cls; state.combo = 0;
-  if (atBoss()) state.bossMiss = true;
-  if (q.mab) state.mabMiss = true;
-  state.lives -= 1; state.phase = 'next'; state.view = 'ans';
-  draw(); renderControls(); renderStatus();
-  monsterAnim('miss-dmg'); showDamage('MISS', '#ff4444');
-  setMessage(['ざんねん！　' + C.describe(q, cls), 'ただしい こたえは みどり', ...q.reason].join('\n'));
-  state.onNext = state.lives <= 0 ? () => { state.phase = 'idle'; $('gameOverScreen').classList.remove('hidden'); } : () => goStep2('② は ただしい ① で 考えよう');
+  // ① を まちがえたら そこで 止める（② へ 進まない）：ふつうの まちがいと 同じく 理由を 見せて、にた 問題へ（11-16 先生「間違えたら、止まって欲しい」）
+  C.record(state.ctx, q, false, cls, Math.round(performance.now() - state.shownAt), state.hintUsed);
+  onWrong(cls);
 }
 function afterStepFail(ok) {   // ① を まちがえた 問題は ② が できても たおせない（もう一度）
   const q = p(), cls = ok ? state.stepFail : C.classify(q, answerNow());
