@@ -786,7 +786,7 @@ function texts(q) {
     if (!two) return [['▼ ① 1つの log に まとめると？', e], ['次の 式を 計算せよ。まず 1つの log に まとめよ。　' + e], e];
     const sv = simpleM(q), mg2 = sv ? mg + ' ＝ ' + lg(qs(R(q.a)), sv) : mg;   // 真数の 計算は 先に すませて 見せる（② は「何乗？」だけを 考える。11-10 先生）
     const show2 = sv ? mg + '\n＝ ' + lg(qs(R(q.a)), sv) + ' ＝ □' : mg + ' ＝ □';   // 2行に 分ける（1行だと ＝ □ だけ 下に 落ちる。11-11 先生）
-    return [['▼ ② 値は？', show2], ['1つに まとめると\n　' + (sv ? mg + '\n　＝ ' + lg(qs(R(q.a)), sv) : mg) + '。\nこの 値を 求めよ。'], mg];   // 「まとめると」で 改行、式は 1行に（11-11 先生）
+    return [['▼ ② 値は？', show2], ['1つに まとめると\n　' + (sv ? mg + '\n　＝ ' + lg(qs(R(q.a)), sv) : mg) + '\nこの 値を 求めよ。'], mg];   // 「まとめると」で 改行、式は 1行に（11-11 先生）
   }
   if (m === 'kUp') { const e = ct(R(q.c)) + lgq(R(q.a), R(q.M)); return [['▼ 係数を 真数の 指数へ', e + ' ＝ ？'], ['次の 式を 1つの log で 表せ。　' + e], e]; }
   if (m === 'kDown') { const e = lg(q.a, pw(q.X, qs(R(q.p)))); return [['▼ log の 前に おろす', e + ' ＝ □'], ['次の 値を 求めよ。　' + e], e]; }
