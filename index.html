@@ -253,6 +253,7 @@ padding: 8px 18px; font-size: 13px; letter-spacing: 2px; cursor: pointer; margin
 .chap.locked { color: #666; border-color: #444; cursor: default; }
 .chap.reset { border-color: #888; color: #ccc; margin-top: 8px; }
 .how-btn.hidden { display: none; }
+.overlay a.link-btn { display: inline-block; text-decoration: none; }   /* 前半・後半を 行き来する（章を えらぶ 画面へ）*/
 .overlay .points {
 text-align: left; border: 3px solid #fff; box-shadow: 0 0 0 3px #000, 0 0 0 5px #fff;
 padding: 12px 14px; margin: 4px 0 8px; font-size: 13px; line-height: 2; letter-spacing: 0.5px;
@@ -379,6 +380,7 @@ sup.ex { font-size: 0.68em; vertical-align: 0.62em; line-height: 0; margin-left:
     <p style="margin-top:20px;">底を 見て、log を 1つに！<br>真数を まとめて たおせ！</p>
     <button class="start-btn" id="startBtn">▶ はじめる</button>
     <button class="how-btn" id="howBtn">？ あそびかた</button>
+    <a class="how-btn link-btn" href="../taisuu-kouhan-quest/#map">▶ 後半（底の 変換・かけざん）へ</a>
     <p class="sub" style="margin-top:20px;font-size:10px;">どの 章からでも、何回でも。<br>ぜんぶの 章を ★3 に すると さいごの 章</p>
     <p class="sub" style="margin-top:14px;font-size:9px;opacity:0.7;">© 2026 math-terakoya　CC BY-NC-SA 4.0</p>
   </div>
@@ -433,6 +435,7 @@ sup.ex { font-size: 0.68em; vertical-align: 0.62em; line-height: 0; margin-left:
     <p class="comp hidden" id="mapComp"></p>
     <button class="zukan-btn" id="zukanBtn">📖 モンスターずかん</button>
     <div id="chapterList"></div>
+    <a class="how-btn link-btn" href="../taisuu-kouhan-quest/#map">▶ 後半（底の 変換・かけざん）へ</a>
   </div>
 
   <div class="overlay hidden" id="zukanScreen">
@@ -1680,6 +1683,7 @@ document.addEventListener('keydown', e => {
 
 new ResizeObserver(resizePlane).observe(wrap);
 renderTitleComp(); renderStatus(); renderControls();
+if (location.hash === '#map') { $('titleScreen').classList.add('hidden'); showMap(); }   // 前半・後半の リンクから 来たら 章を えらぶ 画面（11-16 先生）
 })();
 </script>
 <script>
