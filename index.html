@@ -380,7 +380,7 @@ sup.ex { font-size: 0.68em; vertical-align: 0.62em; line-height: 0; margin-left:
     <p style="margin-top:20px;">底を 見て、log を 1つに！<br>真数を まとめて たおせ！</p>
     <button class="start-btn" id="startBtn">▶ はじめる</button>
     <button class="how-btn" id="howBtn">？ あそびかた</button>
-    <a class="how-btn link-btn" href="../taisuu-kouhan-quest/#map">▶ 後半（底の変換・かけざん）</a>
+    <a class="how-btn link-btn" href="../taisuu-kouhan-quest/#map">▶ 後半（底の変換・かけ算）</a>
     <a class="how-btn link-btn" href="../taisuu-houteishiki-quest/#map">▶ 方程式・不等式</a>
     <p class="sub" style="margin-top:20px;font-size:10px;">どの 章からでも、何回でも。<br>ぜんぶの 章を ★3 に すると さいごの 章</p>
     <p class="sub" style="margin-top:14px;font-size:9px;opacity:0.7;">© 2026 math-terakoya　CC BY-NC-SA 4.0</p>
@@ -406,9 +406,9 @@ sup.ex { font-size: 0.68em; vertical-align: 0.62em; line-height: 0; margin-left:
       <div>　<span class="clb">底</span>は 青、<span class="ctn">真数</span>は オレンジ、<span class="cpk">何乗か</span>は ピンク</div>
       <div>・<b>真数が 1 → 0</b>、<b>底と 真数が 同じ → 1</b></div>
       <div class="defr" data-m="log_{a}{1} ＝ 0　log_{a}{a} ＝ 1"></div>
-      <div>・<b>たしざん</b>：<span data-m="log_{a}"></span> を 1つに して 真数の かけざん</div>
+      <div>・<b>たし算</b>：<span data-m="log_{a}"></span> を 1つに して 真数の かけ算</div>
       <div class="defr" data-m="log_{a}{M} ＋ log_{a}{N} ＝ log_{a}{MN}"></div>
-      <div>・<b>ひきざん</b>：ひいて いる 方を 分母へ</div>
+      <div>・<b>ひき算</b>：ひいて いる 方を 分母へ</div>
       <div class="defr" data-m="log_{a}{M} − log_{a}{N} ＝ log_{a}{{M|N}}"></div>
       <div>・<b>係数</b>：真数の 指数へ（log の 前に おろす）</div>
       <div class="defr" data-m="‹p›log_{a}{M} ＝ log_{a}{M^{p}}"></div>
@@ -436,7 +436,7 @@ sup.ex { font-size: 0.68em; vertical-align: 0.62em; line-height: 0; margin-left:
     <p class="comp hidden" id="mapComp"></p>
     <button class="zukan-btn" id="zukanBtn">📖 モンスターずかん</button>
     <div id="chapterList"></div>
-    <a class="how-btn link-btn" href="../taisuu-kouhan-quest/#map">▶ 後半（底の変換・かけざん）</a>
+    <a class="how-btn link-btn" href="../taisuu-kouhan-quest/#map">▶ 後半（底の変換・かけ算）</a>
     <a class="how-btn link-btn" href="../taisuu-houteishiki-quest/#map">▶ 方程式・不等式</a>
   </div>
 
@@ -526,7 +526,7 @@ sup.ex { font-size: 0.68em; vertical-align: 0.62em; line-height: 0; margin-left:
 <script id="core">
 (function (G) {
 'use strict';
-// 対数クエスト（前半）：書きかえ・たしざん・係数・ひきざん・混合。値の 計算は させず、どう まとめるか・何乗かを 判断する
+// 対数クエスト（前半）：書きかえ・たし算・係数・ひき算・混合。値の 計算は させず、どう まとめるか・何乗かを 判断する
 const FIG = { ASPECT: 0.56 };
 function mulberry32(seed) {
   let t = seed >>> 0;
@@ -627,13 +627,13 @@ function simpleM(q) {   // 1つに まとめた 真数を 計算した 数（整
   const v = merged(q).val, A = qv(R(q.a)), M = Math.pow(A, v);
   const rat = X => { for (let d = 1; d <= 200; d++) { const n = Math.round(X * d); if (n > 0 && Math.abs(n / d - X) < 1e-9 * Math.max(1, X)) return d === 1 ? String(n) : '{' + n + '|' + d + '}'; } return null; };
   const r1 = rat(M); if (r1) return r1;
-  for (let k = 2; k <= 4; k++) { const rk = rat(Math.pow(M, k)); if (rk) return (rk.startsWith('{') ? '(' + rk + ')' : rk) + '^{{1|' + k + '}}'; }   // 累乗根の ときは 中だけ 計算（18 と 2 の 1/3 乗の わりざん → 9^{1/3}）
+  for (let k = 2; k <= 4; k++) { const rk = rat(Math.pow(M, k)); if (rk) return (rk.startsWith('{') ? '(' + rk + ')' : rk) + '^{{1|' + k + '}}'; }   // 累乗根の ときは 中だけ 計算（18 と 2 の 1/3 乗の わり算 → 9^{1/3}）
   return null;
 }
 const plain = q => terms(q).every(t => qv(t.c) === 1 && t.r === 1);
 function variant(q, ty) {
   const a = R(q.a), ts = terms(q);
-  if (ty === 'sumT' || ty === 'subT' || ty === 'pmT') {   // 真数の たしざん・ひきざん に した
+  if (ty === 'sumT' || ty === 'subT' || ty === 'pmT') {   // 真数の たし算・ひき算 に した
     if (!plain(q)) return null;
     const s = ts.reduce((x, t) => x + t.s * qv(t.M), 0);
     if (!(s > 0)) return null;
@@ -685,7 +685,7 @@ const MAB5 = [['45', [0, 2, 1]], ['0.6', [0, 1, -1]], ['1.5', [-1, 1, 0]], ['2.5
 const PR = [2, 3, 5];
 const AV = Math.log2(3), BV = Math.log2(5);
 const eVal = e => PR.reduce((v, p, i) => v * Math.pow(p, e[i]), 1);
-function eText(e, extra) {   // 2・3・5 の かけざん・わりざん（extra は 分子の 頭に つける 文字）
+function eText(e, extra) {   // 2・3・5 の かけ算・わり算（extra は 分子の 頭に つける 文字）
   const f = s => PR.map((p, i) => [p, s * e[i]]).filter(x => x[1] > 0).map(([p, k]) => (k === 1 ? String(p) : pw(p, k)));
   const nu = (extra ? [extra] : []).concat(f(1)), de = f(-1), n = nu.length ? nu.join(' × ') : '1';
   return de.length ? fr(n, de.join(' × ')) : n;
@@ -758,7 +758,7 @@ function makeOptions(q, rng) {
     w.forEach(([k, types]) => add(abText(k), vk(abVal(k)), types));
     const sq = e.findIndex((x, i) => i > 0 && x >= 2);   // log₂3² を a^{2} と した
     if (sq > 0) { const k = e.slice(); k[sq] = 0; const nm = sq === 1 ? 'a' : 'b', rest = abText(k); add(pw(nm, e[sq]) + (rest ? (rest[0] === '−' ? ' − ' + rest.slice(1) : ' ＋ ' + rest) : ''), vk(Math.pow(sq === 1 ? AV : BV, e[sq]) + abVal(k)), ['powKeep']); }
-    const pos = e.map(x => Math.max(x, 0)), ng = e.map(x => Math.max(-x, 0));   // log₂{3|5} を {a|b} と した（log どうしの わりざん）
+    const pos = e.map(x => Math.max(x, 0)), ng = e.map(x => Math.max(-x, 0));   // log₂{3|5} を {a|b} と した（log どうしの わり算）
     if (pos[1] + pos[2] > 0 && ng[1] + ng[2] > 0) add(fr(abText(pos), abText(ng)), vk(abVal(pos) / abVal(ng)), ['divLog']);
     add(abText(e.map(x => -x)), vk(abVal(e.map(x => -x))), ['signAll']);
   }
@@ -770,8 +770,8 @@ function makeOptions(q, rng) {
 
 // ---------- 問題の 文：[ラベル, 短い 言い方]、問題集の ことば、式 ----------
 const STEPS = MERGE.concat(['mAB']);
-const RULE_ADD = '底が 等しい log の たしざんは「log_{a}」を 1つに して 真数の かけざん';
-const RULE_SUB = '底が 等しい log の ひきざんは「log_{a}」を 1つに して ひいて いる 方を 分母へ';
+const RULE_ADD = '底が 等しい log の たし算は「log_{a}」を 1つに して 真数の かけ算';
+const RULE_SUB = '底が 等しい log の ひき算は「log_{a}」を 1つに して ひいて いる 方を 分母へ';
 const RULE_COEF = 'log の 係数は 真数の 指数へ：' + pk('p') + 'log_{a}{M} ＝ log_{a}{M^{p}}';
 const RULE_ROOT = '累乗根を 見たら 指数で 書きかえる：√[n]{M} ＝ M^{{1|n}}';
 const KIND = { a: 'add', s: 'sub', m: 'mix' };
@@ -796,7 +796,7 @@ function texts(q) {
   if (m === 'kMix') { const e = ct(R(q.c)) + rootText(q); return [['▼ 係数と 累乗根', e + ' ＝ □'], ['次の 値を 求めよ。　' + e], e]; }
   if (m === 'mAB') {
     const head = lg(2, 3) + ' ＝ a、' + lg(2, 5) + ' ＝ b', e = lg(2, q.N);
-    if (!two) return [['▼ ① 真数を 分ける', head + '。' + e + ' の 真数 ' + q.N + ' を 2、3、5 で 表すと？'], [head + ' と する。' + e + ' を a、b で 表せ。まず ' + q.N + ' を 2、3、5 の かけざん・わりざんで 表せ。'], e];
+    if (!two) return [['▼ ① 真数を 分ける', head + '。' + e + ' の 真数 ' + q.N + ' を 2、3、5 で 表すと？'], [head + ' と する。' + e + ' を a、b で 表せ。まず ' + q.N + ' を 2、3、5 の かけ算・わり算で 表せ。'], e];
     const e2 = lg(2, inLog(eText(q.e)));
     return [['▼ ② a、b で 表すと？', head + '\n' + e + '\n＝ ' + e2 + ' ＝ ？'], [head + ' と する。\n' + q.N + ' ＝ ' + eText(q.e) + ' より\n　' + e + ' ＝ ' + e2 + '\nを a、b で 表せ。'], e2];   // ② でも a、b の 約束と もとの log を 残す（11-11 先生）
   }
@@ -841,9 +841,9 @@ function reasonLines(q) {
     if (m === 'kMix') { const c = R(q.c); add('係数を かける：' + qs(c) + ' × ' + qs(v) + ' ＝ ' + qs(qmul(c, v))); }
   }
   if (m === 'mAB') {
-    if (q.st !== 2) { add('真数を 2、3、5 の かけざん・わりざんに 分ける（小数は 分数に）'); add(q.N + ' ＝ ' + eText(q.e)); }
+    if (q.st !== 2) { add('真数を 2、3、5 の かけ算・わり算に 分ける（小数は 分数に）'); add(q.N + ' ＝ ' + eText(q.e)); }
     else {
-      add('かけざん → log の たしざん、わりざん → log の ひきざん、指数 → log の 前に おろす');
+      add('かけ算 → log の たし算、わり算 → log の ひき算、指数 → log の 前に おろす');
       const e = q.e, part = [];
       [[1, 3, 'a'], [2, 5, 'b'], [0, 2, '1']].forEach(([i, p]) => { if (!e[i]) return; const k = Math.abs(e[i]); part.push((e[i] < 0 ? ' − ' : ' ＋ ') + (k === 1 ? '' : pk(k)) + lg(2, p)); });
       const s = part.join('').replace(/^ ＋ /, '').replace(/^ − /, '−');
@@ -864,14 +864,14 @@ function hintLines(p) {
   if (m === 'mRoot') return ['累乗根を 指数で 書きかえて、係数を 真数の 指数へ 移す', 'それから log_{a} を 1つに する（ひく 方は 分母へ）'];
   if (m === 'mCoef') return ['係数を 真数の 指数へ 移す', 'それから 底が 同じか 確かめて、log_{a} を 1つに する'];
   if (m === 'mAdd') return ['底が 同じか 確かめて、log_{a} を 1つに する', '（たす 方は 分子、ひく 方は 分母）'];
-  if (m[0] === 'a') return ['底が 同じか 確かめて、log_{a} を 1つに する', '（真数は かけざん）'];
+  if (m[0] === 'a') return ['底が 同じか 確かめて、log_{a} を 1つに する', '（真数は かけ算）'];
   if (m[0] === 's') return ['底が 同じか 確かめて、log_{a} を 1つに する', '（ひいて いる 方の 真数を 分母へ）'];
   if (m === 'kUp') return ['log の 前の 係数を 真数の 指数へ 移す（底は そのまま）'];
   if (m === 'kDown') return ['真数の 指数を log の 前に おろす', '（' + lg('a', 'a') + ' ＝ 1 に なる 形に）'];
   if (m === 'kRoot') return ['累乗根を 指数で 書きかえる（√[n]{a^{m}} ＝ a^{{m|n}}）', 'それから 指数を log の 前に おろす'];
   if (m === 'kMix') return ['累乗根を 指数で 書きかえて、指数を log の 前に おろす', 'さいごに 係数を かける'];
-  if (m === 'mAB' && !two) return ['真数を 2、3、5 の かけざん・わりざんに 分ける', '（小数は 分数に 直してから）'];
-  if (m === 'mAB') return ['かけざんは log の たしざん、わりざんは log の ひきざんに ばらす', '指数は log の 前に おろす'];
+  if (m === 'mAB' && !two) return ['真数を 2、3、5 の かけ算・わり算に 分ける', '（小数は 分数に 直してから）'];
+  if (m === 'mAB') return ['かけ算は log の たし算、わり算は log の ひき算に ばらす', '指数は log の 前に おろす'];
   return [];
 }
 
@@ -880,11 +880,11 @@ const TAP = [];
 const CH_ALL = [
   { key: 'kaki', title: '書きかえ', forms: ['kVal', 'kConv', 'kOne'], plays: [['kVal', 'kConv'], ['kOne', 'kVal'], ['kConv', 'MAB']], intro: true,
     mab: { form: 'kNeg', name: 'サカサログ', sprite: '🙃', tip: lg(2, '{1|8}') + ' ＝ −3：' + pw(2, '−3') + ' ＝ {1|8}（真数が 分数 → マイナス乗）' }, boss: { name: 'カキカエオウ', sprite: '🏰' } },
-  { key: 'tasu', title: '対数の たしざん', forms: ['aInt', 'aHid', 'aFrac'], plays: [['aInt', 'aHid'], ['aFrac', 'aInt'], ['aHid', 'MAB']],
+  { key: 'tasu', title: '対数の たし算', forms: ['aInt', 'aHid', 'aFrac'], plays: [['aInt', 'aHid'], ['aFrac', 'aInt'], ['aHid', 'MAB']],
     mab: { form: 'aThree', name: 'ミツタシ', sprite: '🍡', tip: '3つでも 同じ：log_{a} を 1つに して 真数を ぜんぶ かける' }, boss: { name: 'タシザンオウ', sprite: '🏯' } },
   { key: 'kei', title: '係数を 移す', forms: ['kUp', 'kDown', 'kRoot'], plays: [['kUp', 'kDown'], ['kRoot', 'kUp'], ['kDown', 'MAB']],
     mab: { form: 'kMix', name: 'フタエネ', sprite: '🎎', tip: '4' + lg(2, '√{2}') + ' ＝ 4 × {1|2} ＝ 2：累乗根を 指数に → おろして 係数を かける' }, boss: { name: 'ケイスウオウ', sprite: '🌋' } },
-  { key: 'hiku', title: '対数の ひきざん', forms: ['sInt', 'sBig', 'sNeg'], plays: [['sInt', 'sBig'], ['sNeg', 'sInt'], ['sBig', 'MAB']],
+  { key: 'hiku', title: '対数の ひき算', forms: ['sInt', 'sBig', 'sNeg'], plays: [['sInt', 'sBig'], ['sNeg', 'sInt'], ['sBig', 'MAB']],
     mab: { form: 'sTwo', name: 'ダブルヒキ', sprite: '🪓', tip: '2つ ひく ときは 2つとも 分母へ：' + lg(2, '48') + ' − ' + lg(2, '3') + ' − ' + lg(2, '2') + ' ＝ ' + lg(2, '{48|3 × 2}') },
     boss: { name: 'ヒキザンオウ', sprite: '🗿' } },
   { key: 'maze', title: 'まぜて 計算', forms: ['mAdd', 'mCoef', 'mRoot'], plays: [['mAdd', 'mCoef'], ['mRoot', 'mAdd'], ['mCoef', 'MAB']],
@@ -903,9 +903,9 @@ const MONSTERS = [
   ['kVal', 'ナンジョウ', '🔢', lg(2, 8) + ' ＝ 3：2 を 何乗 すると 8？（' + pw(2, 3) + ' ＝ 8）'],
   ['kConv', 'カキカエル', '🐸', 'a^{p} ＝ M ⇔ log_{a}{M} ＝ p（底は 底の まま）'],
   ['kOne', 'ゼロイチ', '🎲', lg('a', 1) + ' ＝ 0、' + lg('a', 'a') + ' ＝ 1'],
-  ['aInt', 'タシカケ', '🧲', lg(2, 8) + ' ＋ ' + lg(2, 4) + ' ＝ ' + lg(2, '(8 × 4)') + '：真数は かけざん'],
+  ['aInt', 'タシカケ', '🧲', lg(2, 8) + ' ＋ ' + lg(2, 4) + ' ＝ ' + lg(2, '(8 × 4)') + '：真数は かけ算'],
   ['aHid', 'カクレタシ', '🫥', lg(10, 5) + ' ＋ ' + lg(10, 2) + ' ＝ ' + lg(10, 10) + ' ＝ 1：1つずつは わからなくても まとめれば わかる'],
-  ['aFrac', 'ブンタシ', '🍰', lg(3, 6) + ' ＋ ' + lg(3, '{3|2}') + ' ＝ ' + lg(3, 9) + '：分数の 真数も かけざん'],
+  ['aFrac', 'ブンタシ', '🍰', lg(3, 6) + ' ＋ ' + lg(3, '{3|2}') + ' ＝ ' + lg(3, 9) + '：分数の 真数も かけ算'],
   ['kUp', 'ケイスウアゲ', '⬆️', '3' + lg(2, 5) + ' ＝ ' + lg(2, '5^{3}') + '：係数を 真数の 指数へ'],
   ['kDown', 'オロシガネ', '🧀', lg(2, '8^{2}') + ' ＝ 2' + lg(2, 8) + ' ＝ 6：指数を log の 前に おろす'],
   ['kRoot', 'ルートカエ', '🌱', lg(5, '√{25}') + ' ＝ ' + lg(5, 5) + ' ＝ 1（5 では ない）'],
@@ -1000,21 +1000,21 @@ function useStep(p, i) { const st = p.steps[i]; p.stepIdx = i; p.label = st.labe
 function judge(p, ans) { return p.options[ans.opt].correct; }
 function classify(p, ans) { return { types: p.options[ans.opt].types.slice() }; }
 const TYPE_TEXT = {
-  tn: '真数を 答えた（log の 値は 何乗か の 方）', div: 'わりざん では ない（底を 何乗 すると 真数に なるか）', flip: '底と 真数を 逆に 見た（' + lg('a', 'M') + ' は a を 何乗 すると M か）',
+  tn: '真数を 答えた（log の 値は 何乗か の 方）', div: 'わり算 では ない（底を 何乗 すると 真数に なるか）', flip: '底と 真数を 逆に 見た（' + lg('a', 'M') + ' は a を 何乗 すると M か）',
   neg: 'プラスと マイナスが 逆', swapBE: '底と 指数が 入れかわった', swapTE: '真数と 指数が 入れかわった', swapBT: '底と 真数が 入れかわった',
   one1: lg('a', 1) + ' は 0（a^{0} ＝ 1）', zero: lg('a', 'a') + ' は 1（a^{1} ＝ a）', base: '底を 答えた（求めるのは 何乗か）',
-  sumT: 'たしざんは 真数の かけざん（真数を たさない）', subT: 'ひきざんは 真数の わりざん（真数を ひかない）', pmT: '真数は かけざん・わりざん（たさない・ひかない）',
-  mulLog: 'log が 2つ のこって いる（' + lg('a', '') + ' を 1つに して 真数を かける）', divLog: 'log どうしの わりざん では ない（' + lg('a', '') + ' を 1つに して 真数を 分数に）',
+  sumT: 'たし算は 真数の かけ算（真数を たさない）', subT: 'ひき算は 真数の わり算（真数を ひかない）', pmT: '真数は かけ算・わり算（たさない・ひかない）',
+  mulLog: 'log が 2つ のこって いる（' + lg('a', '') + ' を 1つに して 真数を かける）', divLog: 'log どうしの わり算 では ない（' + lg('a', '') + ' を 1つに して 真数を 分数に）',
   baseAdd: '底は そのまま（底どうしは たさない）', updown: 'ひいて いる 方を 分母へ（上下が 逆）', updown2: '2つめの ひいて いる 方も 分母へ', plusDen: 'たして いる 方は 分子',
   nocoef: '係数を わすれた（係数は 真数の 指数へ）', mulc: '係数は 真数に かけない（真数の 指数へ）', inv: '係数は そのまま 指数へ（逆数に しない）', keep: '移したら 前の 係数は 消える',
-  drop: '指数を log の 前に おろし わすれた', addE: 'おろした 指数は かけざん（たさない）', powK: 'log の 前に おろす（累乗 しない）', addc: '係数は かけざん（たさない）',
+  drop: '指数を log の 前に おろし わすれた', addE: 'おろした 指数は かけ算（たさない）', powK: 'log の 前に おろす（累乗 しない）', addc: '係数は かけ算（たさない）',
   flipR: '累乗根の 指数を 逆に した（√[n]{M} ＝ M^{{1|n}}）', rflip: '分母と 分子が 逆（中の 指数が 分子、左上の 数が 分母）', noroot: '累乗根を わすれた（√ は {1|2}乗）', mulE: '指数どうしを かけない（分数に なる）',
   keta: '小数の けたが ちがう', swapE: '3 と 5 の 指数が 入れかわった', expMul: '3^{2} は 3 × 3（2 × 3 では ない）',
   swapAB: 'a と b が 入れかわった', zero2: lg(2, 2) + ' ＝ 1 を わすれた', signAll: 'わる 方は マイナス（符号が 逆）', powKeep: '指数は log の 前に おろす（a^{2} では ない）',
   scatter: 'えらびかたが ばらばら',
 };
 const MASTER_TEXT = { tn: '真数と 値', div: '何乗か', flip: '底と 真数', neg: 'プラスと マイナス', swapBE: '底と 指数', swapTE: '真数と 指数', swapBT: '底と 真数',
-  one1: '真数が 1', zero: '底と 真数が 同じ', base: '何乗か', sumT: 'たしざんは かけざん', subT: 'ひきざんは わりざん', pmT: '真数の 計算', mulLog: 'log を 1つに', divLog: 'log を 1つに',
+  one1: '真数が 1', zero: '底と 真数が 同じ', base: '何乗か', sumT: 'たし算は かけ算', subT: 'ひき算は わり算', pmT: '真数の 計算', mulLog: 'log を 1つに', divLog: 'log を 1つに',
   baseAdd: '底は そのまま', updown: 'ひく 方を 分母へ', updown2: '2つとも 分母へ', plusDen: 'たす 方は 分子', nocoef: '係数', mulc: '係数は 指数へ', inv: '係数は そのまま', keep: '係数を 移す',
   drop: 'おろす', addE: 'おろして かける', powK: 'おろす', addc: '係数を かける', flipR: '累乗根の 指数', rflip: '分母と 分子', noroot: '累乗根', mulE: '分数の 指数',
   keta: '小数の けた', swapE: '指数の 場所', expMul: '累乗', swapAB: 'a と b', zero2: lg(2, 2) + ' ＝ 1', signAll: 'わる 方は マイナス', powKeep: '指数を おろす' };
